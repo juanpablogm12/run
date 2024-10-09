@@ -5,39 +5,83 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+
+const createCompany = async (id: number, companyName: string, address: string, phone: number): Promise<void> => {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('company')
+    .insert([
+      { id: id, name: companyName, address: address, phone: phone, },
+    ])
+    .select()
+
+  if (error) {
+    console.error(error.code + " " + error.message);
+    return encodedRedirect("error", "/sign-up", error.message);
+  }
+}
+
+const createProfile = async (id: string, name: string, email: string, role: string, company_id: number): Promise<void> => {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('profiles')
+    .insert([
+      { id: id, name: name, email: email, role: role, company_id: company_id }
+    ])
+    .select()
+
+  if (error) {
+    console.error(error.code + " " + error.message);
+    return encodedRedirect("error", "/sign-up", error.message);
+  }
+}
+
 export const signUpAction = async (formData: FormData) => {
+
+  const id = Number(formData.get("id"));
+  const companyName = formData.get("companyName")?.toString();
+  const adminName = formData.get("adminName")?.toString();
   const email = formData.get("email")?.toString();
+  const phone = Number(formData.get("phone"));
+  const address = formData.get("address")?.toString();
   const password = formData.get("password")?.toString();
+
   const supabase = createClient();
   const origin = headers().get("origin");
 
-  if (!email || !password) {
-    return { error: "Email and password are required" };
+  if (!id || !companyName || !adminName || !email || !phone || !address || !password) {
+    return { error: "Todos los campos son requeridos" };
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
     },
   });
-
-  if (error) {
-    console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
-  } else {
+  console.log(data);
+  if (data.user?.id) {
+    await createCompany(id, companyName, address, phone);
+    await createProfile(data?.user?.id, adminName, email, "admin", id);
     return encodedRedirect(
       "success",
       "/sign-up",
       "Thanks for signing up! Please check your email for a verification link.",
     );
   }
+
+  if (error) {
+    console.error(error.code + " " + error.message);
+    return encodedRedirect("error", "/sign-up", error.message);
+  }
 };
+
 
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+
   const supabase = createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
