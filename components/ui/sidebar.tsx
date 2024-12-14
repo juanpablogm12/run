@@ -10,9 +10,19 @@ import {
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "./button";
+import { signOutAction } from "@/app/actions";
 
 export const Sidebar = () => {
   const pathname = usePathname();
+  const handleSignOut = async () => {
+    try {
+      await signOutAction();
+      window.location.href = '/sign-in';
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   const links = [
     { name: "Inicio", href: "/protected/home", icon: HomeIcon },
@@ -53,6 +63,7 @@ export const Sidebar = () => {
           );
         })}
       </div>
+      <Button onClick={handleSignOut}>Salir</Button>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
+
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -60,39 +60,38 @@ const fakeVehicles = [
   },
 ];
 
-export default async function Vehicles() {
+export default function Vehicles() {
   const [vehicles, setVehicles] = useState(fakeVehicles);
+
   return (
     <div className="p-6">
       <div className="flex gap-4">
         <h1 className="grow text-2xl font-bold ">Vehículos</h1>
-        <Button>Crear Vehiculo</Button>
       </div>
       <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Placa</TableHead>
+            <TableHead>Placa</TableHead>
             <TableHead>Marca</TableHead>
             <TableHead>Modelo</TableHead>
-            <TableHead>Propietario</TableHead>
+            <TableHead>Nombre</TableHead>
             <TableHead>Telefono</TableHead>
             <TableHead>Correo</TableHead>
-            <TableHead className="text-right">Editar</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
+
           {vehicles.map(({placa, brand, model, name, phone, email}) => (
-          <TableRow key={placa}>
-            <TableCell className="font-medium">{placa}</TableCell>
-            <TableCell>{brand}</TableCell>
-            <TableCell>{model}</TableCell>
-            <TableCell>{name}</TableCell>
-            <TableCell>{phone}</TableCell>
-            <TableCell>{email}</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
-        ))}
+            <TableRow key={placa}>
+              <TableCell className="font-medium">{placa}</TableCell>
+              <TableCell >{brand}</TableCell>
+              <TableCell >{model}</TableCell>
+              <TableCell >{name}</TableCell>
+              <TableCell >{phone}</TableCell>
+              <TableCell >{email}</TableCell>
+            </TableRow>
+            
+          ))}
         </TableBody>
       </Table>
     </div>

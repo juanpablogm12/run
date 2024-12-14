@@ -36,6 +36,38 @@ const createProfile = async (id: string, name: string, email: string, role: stri
   }
 }
 
+
+
+export const createVehicleActions = async () => {
+
+  const supabase = createClient();
+
+  const {data: authData, error: authError} = await supabase.auth.getUser()
+  
+  if (authError) {
+    console.error(authError.code + " " + authError.message ); 
+  } 
+
+  const user = authData.user
+
+  if (!user) {
+    console.error("Usuario no encontrado");
+    return null
+  }
+
+  const {data: company, error: companyError } = await supabase
+    .from('company')
+    .select('*')
+    .eq('user_id', user.id)
+    
+  if (companyError) {
+    console.error(companyError.code + " " + companyError.message);
+  }
+  console.log(company);
+  return company
+}
+
+
 export const signUpAction = async (formData: FormData) => {
 
   const id = Number(formData.get("id"));
@@ -172,3 +204,4 @@ export const signOutAction = async () => {
   await supabase.auth.signOut();
   return redirect("/sign-in");
 };
+
